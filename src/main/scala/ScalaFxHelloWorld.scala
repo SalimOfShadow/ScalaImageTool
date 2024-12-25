@@ -1,3 +1,4 @@
+import ImageUtils.isAnImage
 import scalafx.application.JFXApp3
 import scalafx.geometry.Insets
 import scalafx.scene.effect.DropShadow
@@ -11,7 +12,8 @@ import scalafx.scene.{Node, Scene}
 import scalafx.scene.control.*
 import scalafx.event.ActionEvent
 import scalafx.scene.control.Alert.AlertType.Warning
-import scalafx.scene.input.{DragEvent, MouseEvent}
+import scalafx.scene.input.TransferMode.Link
+import scalafx.scene.input.{DragEvent, MouseEvent, TransferMode}
 import scalafx.scene.shape.Rectangle
 
 import scala.jdk.CollectionConverters.*
@@ -39,11 +41,19 @@ object ScalaFxHelloWorld extends JFXApp3 {
           height = 200
           fill = Aqua
         }
-        rectangleBox.onDragOver = (e: DragEvent) => { handleFileDrag(e) }
+
+        rectangleBox.onDragOver = (e: DragEvent) => handleFileDrag(e)
+
         def handleFileDrag(e: DragEvent): Unit = {
-          if (e.getDragboard.hasFiles) {
-            val files = e.getDragboard.getFiles.asScala.toList
-            val filesQuantity: Int = files.length
+          val draggedFiles = e.getDragboard.getFiles.asScala.toList
+          val imageList = draggedFiles.filter(isAnImage)
+          println(imageList)
+          if (!e.getDragboard.hasFiles || imageList.isEmpty) {
+            rectangleBox.fill = Red
+            println("The file you've dropped was not an image.")
+          } else {
+            rectangleBox.fill = Green
+            val filesQuantity: Int = imageList.length
             if (filesQuantity > 3) {
               val ProceedButton = new ButtonType("Proceed")
               val ExitButton = new ButtonType("Exit")
@@ -64,10 +74,13 @@ object ScalaFxHelloWorld extends JFXApp3 {
                 case _ => println("User chose CANCEL or closed the dialog")
               }
             }
-            Thread.sleep(1000)
-            println(s"Trying to pass ${files.length} file.")
-            println(files)
+            println(s"Trying to pass ${filesQuantity} file.")
+            println(imageList)
+            e.acceptTransferModes(Link)
           }
+        }
+        rectangleBox.onDragExited = (e: DragEvent) => {
+          rectangleBox.fill = Aqua
         }
         content = List(testButton, rectangleBox)
       }
