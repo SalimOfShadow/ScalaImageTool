@@ -16,6 +16,7 @@ import scalafx.scene.input.TransferMode.Link
 import scalafx.scene.input.{DragEvent, MouseEvent, TransferMode}
 import scalafx.scene.shape.Rectangle
 
+import java.io.FileNotFoundException
 import scala.jdk.CollectionConverters.*
 
 object ScalaFxHelloWorld extends JFXApp3 {
@@ -45,38 +46,45 @@ object ScalaFxHelloWorld extends JFXApp3 {
         rectangleBox.onDragOver = (e: DragEvent) => handleFileDrag(e)
 
         def handleFileDrag(e: DragEvent): Unit = {
-          val draggedFiles = e.getDragboard.getFiles.asScala.toList
-          val imageList = draggedFiles.filter(isAnImage)
-          println(imageList)
-          if (!e.getDragboard.hasFiles || imageList.isEmpty) {
-            rectangleBox.fill = Red
-            println("The file you've dropped was not an image.")
-          } else {
-            rectangleBox.fill = Green
-            val filesQuantity: Int = imageList.length
-            if (filesQuantity > 3) {
-              val ProceedButton = new ButtonType("Proceed")
-              val ExitButton = new ButtonType("Exit")
+          try {
+            val draggedFiles = e.getDragboard.getFiles.asScala.toList
+            val imageList = draggedFiles.filter(isAnImage)
 
-              val alert = new Alert(Warning) {
-                title = "Warning"
-                headerText = "Files Quantity Warning"
-                contentText =
-                  "You've selected more than 3 files. This may yield unexpected results."
-                buttonTypes = Seq(ProceedButton, ExitButton)
+            if (!e.getDragboard.hasFiles || imageList.isEmpty) {
+              rectangleBox.fill = Red
+              println("The file you've dropped was not an image.")
+            } else {
+              rectangleBox.fill = Green
+              val filesQuantity: Int = imageList.length
+              if (filesQuantity > 3) {
+                val ProceedButton = new ButtonType("Proceed")
+                val ExitButton = new ButtonType("Exit")
+
+                val alert = new Alert(Warning) {
+                  title = "Warning"
+                  headerText = "Files Quantity Warning"
+                  contentText =
+                    "You've selected more than 3 files. This may yield unexpected results."
+                  buttonTypes = Seq(ProceedButton, ExitButton)
+                }
+                val result = alert.showAndWait()
+                result match {
+                  case Some(ProceedButton) => println("User decided to proceed")
+                  case Some(ExitButton) =>
+                    println("User aborted the operation")
+                    return
+                  case _ => println("User chose CANCEL or closed the dialog")
+                }
               }
-              val result = alert.showAndWait()
-              result match {
-                case Some(ProceedButton) => println("User decided to proceed")
-                case Some(ExitButton) =>
-                  println("User aborted the operation")
-                  return
-                case _ => println("User chose CANCEL or closed the dialog")
-              }
+              println(s"Trying to pass ${filesQuantity} file.")
+              println(imageList)
+              e.acceptTransferModes(Link)
             }
-            println(s"Trying to pass ${filesQuantity} file.")
-            println(imageList)
-            e.acceptTransferModes(Link)
+
+          } catch {
+            case e: Exception =>
+              rectangleBox.fill = Red
+              println("Exception occured...Please make sure the selected file/files are images")
           }
         }
         rectangleBox.onDragExited = (e: DragEvent) => {
