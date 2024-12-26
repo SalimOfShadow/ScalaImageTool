@@ -73,3 +73,6 @@ project/**/metals.sbt
 
 .bsp
 .history
+
+# Project specific
+./converted-images/*
