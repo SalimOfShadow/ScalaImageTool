@@ -10,6 +10,7 @@ import scalafx.scene.{Node, Scene}
 import scalafx.scene.control.*
 import scalafx.event.ActionEvent
 import scalafx.geometry.Insets
+import scalafx.geometry.Pos.Center
 import scalafx.scene.control.Alert.AlertType.Warning
 import scalafx.scene.input.TransferMode.Link
 import scalafx.scene.input.{DragEvent, MouseEvent, TransferMode}
@@ -39,21 +40,25 @@ object ScalaImageTool extends JFXApp3 {
         }
 
         // Handle drags
+        val rectangleWidth = 500
+        val rectangleHeight = 300
         val rectangleBox: Rectangle = new Rectangle {
-          width = 600
-          height = 200
-          fill = Aqua
+          width = 500
+          height = 300
+          fill = White
+          stroke = Color.Black
+          strokeDashArray.addAll(10, 5)
         }
+        rectangleBox.x = (width() - rectangleWidth) / 2
+        rectangleBox.y = (height() - rectangleHeight) / 2
 
         def handleFileDrag(e: DragEvent): Unit = {
           try {
             val draggedFiles = e.getDragboard.getFiles.asScala.toList
             val imageList = draggedFiles.filter(isAnImage)
             if (!e.getDragboard.hasFiles || imageList.isEmpty) {
-              rectangleBox.fill = Red
               println("The file you've dropped was not an image.")
             } else {
-              rectangleBox.fill = Green
               val filesQuantity: Int = imageList.length
               println(s"Trying to pass ${filesQuantity} file.")
               println(imageList)
@@ -62,7 +67,6 @@ object ScalaImageTool extends JFXApp3 {
 
           } catch {
             case e: Exception =>
-              rectangleBox.fill = Red
               println(
                 "Exception occured...Please make sure the selected file/files are images"
               )
@@ -90,11 +94,8 @@ object ScalaImageTool extends JFXApp3 {
             }
             val result = alert.showAndWait()
           }
-          rectangleBox.fill = Aqua
         }
-        rectangleBox.onDragExited = (e: DragEvent) => {
-          rectangleBox.fill = Aqua // Return to previous idle state
-        }
+        rectangleBox.onDragExited = (e: DragEvent) => {}
 
         content = List(rectangleBox, choiceBox)
       }
