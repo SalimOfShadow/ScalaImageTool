@@ -1,4 +1,4 @@
-import ImageUtils.isAnImage
+import ImageUtils.{isAnImage, saveImage}
 import scalafx.application.JFXApp3
 import scalafx.geometry.Insets
 import scalafx.scene.effect.DropShadow
@@ -24,7 +24,7 @@ object ScalaFxHelloWorld extends JFXApp3 {
     stage = new JFXApp3.PrimaryStage {
       //    initStyle(StageStyle.Unified)
       title = "ScalaFX Hello World"
-
+      resizable = false
       scene = new Scene(700, 700) {
         val testButton: Button = new Button("Test Button") {
           layoutX = 50
@@ -49,7 +49,6 @@ object ScalaFxHelloWorld extends JFXApp3 {
           try {
             val draggedFiles = e.getDragboard.getFiles.asScala.toList
             val imageList = draggedFiles.filter(isAnImage)
-
             if (!e.getDragboard.hasFiles || imageList.isEmpty) {
               rectangleBox.fill = Red
               println("The file you've dropped was not an image.")
@@ -68,6 +67,7 @@ object ScalaFxHelloWorld extends JFXApp3 {
                   buttonTypes = Seq(ProceedButton, ExitButton)
                 }
                 val result = alert.showAndWait()
+                rectangleBox.fill = Aqua
                 result match {
                   case Some(ProceedButton) => println("User decided to proceed")
                   case Some(ExitButton) =>
@@ -84,10 +84,15 @@ object ScalaFxHelloWorld extends JFXApp3 {
           } catch {
             case e: Exception =>
               rectangleBox.fill = Red
-              println("Exception occured...Please make sure the selected file/files are images")
+              println(
+                "Exception occured...Please make sure the selected file/files are images"
+              )
           }
         }
         rectangleBox.onDragExited = (e: DragEvent) => {
+          val draggedFiles = e.getDragboard.getFiles.asScala.toList
+          val imageList = draggedFiles.filter(isAnImage)
+          saveImage(imageList, "jpeg")
           rectangleBox.fill = Aqua
         }
         content = List(testButton, rectangleBox)

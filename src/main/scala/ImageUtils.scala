@@ -9,4 +9,17 @@ object ImageUtils {
     val image: BufferedImage = ImageIO.read(file)
     image != null
   }
+
+  def saveImage(imageList: List[File], imageType: String): Unit = {
+    println("Should save the images")
+    val fileExtension = s".${imageType.toLowerCase}"
+    val bufferedImageList = imageList.map(ImageIO.read).zipWithIndex
+    val convertedImages: Unit = bufferedImageList.foreach((image, index) =>
+      ImageIO.write(
+        image,
+        imageType,
+        new File(s"./convertedImage${fileExtension}-${index}")
+      )
+    )
+  }
 }
