@@ -1,13 +1,9 @@
 import ImageUtils.{isAnImage, saveImage}
+import PossibleImageFormat._
 import scalafx.application.JFXApp3
-import scalafx.geometry.Insets
-import scalafx.scene.effect.DropShadow
-import scalafx.scene.layout.HBox
 import scalafx.scene.paint.Color.*
 import scalafx.scene.paint.*
-import scalafx.scene.text.Text
 import scalafx.Includes.*
-import scalafx.scene.Scene
 import scalafx.scene.{Node, Scene}
 import scalafx.scene.control.*
 import scalafx.event.ActionEvent
@@ -15,15 +11,13 @@ import scalafx.scene.control.Alert.AlertType.Warning
 import scalafx.scene.input.TransferMode.Link
 import scalafx.scene.input.{DragEvent, MouseEvent, TransferMode}
 import scalafx.scene.shape.Rectangle
-
-import java.io.FileNotFoundException
 import scala.jdk.CollectionConverters.*
 
-object ScalaFxHelloWorld extends JFXApp3 {
+object ScalaImageTool extends JFXApp3 {
   override def start(): Unit = {
     stage = new JFXApp3.PrimaryStage {
       //    initStyle(StageStyle.Unified)
-      title = "ScalaFX Hello World"
+      title = "ScalaImageTool"
       resizable = false
       scene = new Scene(700, 700) {
         val testButton: Button = new Button("Test Button") {
@@ -92,8 +86,8 @@ object ScalaFxHelloWorld extends JFXApp3 {
         rectangleBox.onDragExited = (e: DragEvent) => {
           val draggedFiles = e.getDragboard.getFiles.asScala.toList
           val imageList = draggedFiles.filter(isAnImage)
-          saveImage(imageList, "jpeg")
-          rectangleBox.fill = Aqua
+          saveImage(imageList, GIF)
+          rectangleBox.fill = Aqua // Return to previous idle state
         }
         content = List(testButton, rectangleBox)
       }
