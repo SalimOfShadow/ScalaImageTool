@@ -10,6 +10,7 @@ object PossibleImageFormat {
   val BMP = "bmp"
   val TIFF = "tiff"
   val WEBP = "webp"
+  val INVALID_FORMAT = ""
 }
 
 object ImageUtils {

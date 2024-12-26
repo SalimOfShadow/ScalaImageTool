@@ -1,16 +1,20 @@
 import ImageUtils.{isAnImage, saveImage}
-import PossibleImageFormat._
+import PossibleImageFormat.*
 import scalafx.application.JFXApp3
 import scalafx.scene.paint.Color.*
 import scalafx.scene.paint.*
 import scalafx.Includes.*
+import scalafx.beans.property.{ObjectProperty, StringProperty}
+import scalafx.collections.ObservableBuffer
 import scalafx.scene.{Node, Scene}
 import scalafx.scene.control.*
 import scalafx.event.ActionEvent
+import scalafx.geometry.Insets
 import scalafx.scene.control.Alert.AlertType.Warning
 import scalafx.scene.input.TransferMode.Link
 import scalafx.scene.input.{DragEvent, MouseEvent, TransferMode}
 import scalafx.scene.shape.Rectangle
+
 import scala.jdk.CollectionConverters.*
 
 object ScalaImageTool extends JFXApp3 {
@@ -20,24 +24,26 @@ object ScalaImageTool extends JFXApp3 {
       title = "ScalaImageTool"
       resizable = false
       scene = new Scene(700, 700) {
-        val testButton: Button = new Button("Test Button") {
-          layoutX = 50
+        // Dropdown menu
+        val choiceBox: ComboBox[String] = new ComboBox(
+          List("PNG", "JPEG", "GIF", "BMP", "TIFF", "WEBP")
+        ) {
+          promptText = "Please Select A File Format." // Initial label
+          layoutX = 100
           layoutY = 50
-          onAction = (e: ActionEvent) => {
-            println("Button clicked")
-
-          }
-          onDragDetected = (e: MouseEvent) => {
-            println("Drag Detected")
-          }
+          padding = Insets(5, 15, 5, 15)
+          prefWidth = 250
+          prefHeight = 10
+          style =
+            "-fx-font-size: 13;\n    -fx-font-family: \"Times New Roman\";\n    -fx-background-color: '#91959c';"
         }
+
+        // Handle drags
         val rectangleBox: Rectangle = new Rectangle {
           width = 600
           height = 200
           fill = Aqua
         }
-
-        rectangleBox.onDragOver = (e: DragEvent) => handleFileDrag(e)
 
         def handleFileDrag(e: DragEvent): Unit = {
           try {
@@ -49,30 +55,9 @@ object ScalaImageTool extends JFXApp3 {
             } else {
               rectangleBox.fill = Green
               val filesQuantity: Int = imageList.length
-              if (filesQuantity > 3) {
-                val ProceedButton = new ButtonType("Proceed")
-                val ExitButton = new ButtonType("Exit")
-
-                val alert = new Alert(Warning) {
-                  title = "Warning"
-                  headerText = "Files Quantity Warning"
-                  contentText =
-                    "You've selected more than 3 files. This may yield unexpected results."
-                  buttonTypes = Seq(ProceedButton, ExitButton)
-                }
-                val result = alert.showAndWait()
-                rectangleBox.fill = Aqua
-                result match {
-                  case Some(ProceedButton) => println("User decided to proceed")
-                  case Some(ExitButton) =>
-                    println("User aborted the operation")
-                    return
-                  case _ => println("User chose CANCEL or closed the dialog")
-                }
-              }
               println(s"Trying to pass ${filesQuantity} file.")
               println(imageList)
-              e.acceptTransferModes(Link)
+              e.acceptTransferModes(Link) // Is it needed?
             }
 
           } catch {
@@ -83,13 +68,35 @@ object ScalaImageTool extends JFXApp3 {
               )
           }
         }
-        rectangleBox.onDragExited = (e: DragEvent) => {
+        // Drag related events
+        rectangleBox.onDragOver = (e: DragEvent) => handleFileDrag(e)
+        rectangleBox.onDragDropped = (e: DragEvent) => {
           val draggedFiles = e.getDragboard.getFiles.asScala.toList
           val imageList = draggedFiles.filter(isAnImage)
-          saveImage(imageList, GIF)
+          val selectedImageFormat: String =
+            Option(choiceBox.value.value).map(_.toLowerCase).getOrElse("")
+
+          if (selectedImageFormat != "") {
+            println(selectedImageFormat)
+            saveImage(imageList, selectedImageFormat)
+          } else {
+            val ProceedButton = new ButtonType("OK")
+            val alert = new Alert(Warning) {
+              title = "Warning"
+              headerText = "Invalid File Format"
+              contentText =
+                "Please select a valid file format before proceeding."
+              buttonTypes = Seq(ProceedButton)
+            }
+            val result = alert.showAndWait()
+          }
+          rectangleBox.fill = Aqua
+        }
+        rectangleBox.onDragExited = (e: DragEvent) => {
           rectangleBox.fill = Aqua // Return to previous idle state
         }
-        content = List(testButton, rectangleBox)
+
+        content = List(rectangleBox, choiceBox)
       }
     }
   }
