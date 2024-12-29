@@ -81,14 +81,18 @@ object ScalaImageTool extends JFXApp3 {
         rectangleBox.onDragExited = (e: DragEvent) => {}
 
         // Drop File Icon
-        val dropFileIcon: Image = new Image(
-          url = getClass.getResource("/icons/drop-icon.png").toString,
-          requestedWidth = 130,
-          requestedHeight = 130,
-          preserveRatio = true,
-          smooth = true
-        )
-        val iconView: ImageView = new ImageView(dropFileIcon) {
+        def getImage(action: String): Image = {
+          val imageUrl = getClass.getResource(s"/icons/$action-icon.png").toString
+          new Image(
+            url = imageUrl,
+            requestedWidth = 130,
+            requestedHeight = 130,
+            preserveRatio = true,
+            smooth = true
+          )
+        }
+        
+        val iconView: ImageView = new ImageView(getImage("drop")) {
           styleClass += "icon-button"
         }
         val stackPane = new StackPane() {
