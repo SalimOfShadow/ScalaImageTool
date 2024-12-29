@@ -21,7 +21,6 @@ object DragAndDropUtils {
         val filesQuantity: Int = imageList.length
         println(s"Trying to pass ${filesQuantity} file.")
         println(imageList)
-        e.acceptTransferModes(Link) // Is it needed?
       }
 
     } catch {

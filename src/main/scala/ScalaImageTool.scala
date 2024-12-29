@@ -1,5 +1,5 @@
 import Utils.DragAndDropUtils.handleFileDrag
-import Utils.ImageUtils.{IconAction, getIconImage, isAnImage, saveImage}
+import Utils.ImageUtils.{IconAction, getIconImage, isAnImage, saveImage, swapIconImage}
 import Utils.ImageUtils.IconAction.*
 import scalafx.application.JFXApp3
 import scalafx.scene.paint.Color.*
@@ -56,9 +56,18 @@ object ScalaImageTool extends JFXApp3 {
         rectangleBox.x = (width() - rectangleWidth) / 2
         rectangleBox.y = (height() - rectangleHeight) / 2
         // Drag related events
-        rectangleBox.onDragOver = (e: DragEvent) =>
+        rectangleBox.onDragEntered = (e: DragEvent) => {
+          swapIconImage(ATTACH, iconView)
           handleFileDrag(e, e.getDragboard.getFiles.asScala.toList)
+        }
+        rectangleBox.onDragOver = (e: DragEvent) => {
+          if (e.getDragboard.hasFiles) {
+            e.acceptTransferModes(TransferMode.Link) // Accept drag-and-drop
+          }
+          e.consume() // Consume the event
+        }
         rectangleBox.onDragDropped = (e: DragEvent) => {
+          println("Drag dropped fired")
           val draggedFiles = e.getDragboard.getFiles.asScala.toList
           val imageList = draggedFiles.filter(isAnImage)
           val selectedImageFormat: String =
@@ -79,11 +88,11 @@ object ScalaImageTool extends JFXApp3 {
             val result = alert.showAndWait()
           }
         }
-        rectangleBox.onDragExited = (e: DragEvent) => {}
+        rectangleBox.onDragExited = (e: DragEvent) => {
+          swapIconImage(DROP,iconView)
+        }
 
         // Drop File Icon
-
-
         val iconView: ImageView = new ImageView(getIconImage(DROP)) {
           styleClass += "icon-button"
         }
@@ -94,19 +103,6 @@ object ScalaImageTool extends JFXApp3 {
           layoutY = 280
         };
         stackPane.styleClass += "icon-button"
-
-        // FadeTransition example (for opacity)
-        stackPane.onMouseClicked = (e: MouseEvent) => {
-          println("Should play the animation")
-          iconView.image = getIconImage(WARNING)
-
-//          val fadeTransition = new FadeTransition(Duration(3000), iconView)
-//          fadeTransition.toValue = 0.0 // Fade out (0.0 is fully transparent)
-//          fadeTransition.play()
-        }
-        println(
-          s"Stylesheet loaded: ${getClass.getResource("/style.css").toExternalForm}"
-        )
 
         // Displayed content array
         content = List(rectangleBox, choiceBox, stackPane)
