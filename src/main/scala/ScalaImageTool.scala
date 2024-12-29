@@ -1,6 +1,6 @@
-import Utils.DragAndDropUtils.handleFileDrag
-import Utils.ImageUtils.{IconAction, getIconImage, isAnImage, saveImage, swapIconImage}
-import Utils.ImageUtils.IconAction.*
+import utils.DragAndDropUtils.handleFileDrag
+import utils.ImageUtils.{IconAction, getIconImage, isAnImage, saveImage, swapIconImage}
+import utils.ImageUtils.IconAction.*
 import scalafx.application.JFXApp3
 import scalafx.scene.paint.Color.*
 import scalafx.scene.paint.*

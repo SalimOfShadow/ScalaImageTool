@@ -1,4 +1,4 @@
-package Utils
+package utils
 
 import scalafx.animation.FadeTransition
 import scalafx.event.ActionEvent

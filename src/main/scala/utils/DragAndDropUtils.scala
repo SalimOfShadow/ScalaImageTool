@@ -1,6 +1,6 @@
-package Utils
+package utils
 
-import Utils.ImageUtils.{isAnImage, saveImage}
+import utils.ImageUtils.{isAnImage, saveImage}
 
 import scalafx.scene.{Node, Scene}
 
