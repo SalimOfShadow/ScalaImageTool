@@ -1,5 +1,6 @@
 import Utils.DragAndDropUtils.handleFileDrag
-import Utils.ImageUtils.{isAnImage, saveImage}
+import Utils.ImageUtils.{IconAction, getIconImage, isAnImage, saveImage}
+import Utils.ImageUtils.IconAction.*
 import scalafx.application.JFXApp3
 import scalafx.scene.paint.Color.*
 import scalafx.scene.paint.*
@@ -81,21 +82,13 @@ object ScalaImageTool extends JFXApp3 {
         rectangleBox.onDragExited = (e: DragEvent) => {}
 
         // Drop File Icon
-        def getImage(action: String): Image = {
-          val imageUrl = getClass.getResource(s"/icons/$action-icon.png").toString
-          new Image(
-            url = imageUrl,
-            requestedWidth = 130,
-            requestedHeight = 130,
-            preserveRatio = true,
-            smooth = true
-          )
-        }
-        
-        val iconView: ImageView = new ImageView(getImage("drop")) {
+
+
+        val iconView: ImageView = new ImageView(getIconImage(DROP)) {
           styleClass += "icon-button"
         }
-        val stackPane = new StackPane() {
+
+        val stackPane: StackPane = new StackPane() {
           children = iconView
           layoutX = 280
           layoutY = 280
@@ -105,9 +98,11 @@ object ScalaImageTool extends JFXApp3 {
         // FadeTransition example (for opacity)
         stackPane.onMouseClicked = (e: MouseEvent) => {
           println("Should play the animation")
-          val fadeTransition = new FadeTransition(Duration(3000), iconView)
-          fadeTransition.toValue = 0.0 // Fade out (0.0 is fully transparent)
-          fadeTransition.play()
+          iconView.image = getIconImage(WARNING)
+
+//          val fadeTransition = new FadeTransition(Duration(3000), iconView)
+//          fadeTransition.toValue = 0.0 // Fade out (0.0 is fully transparent)
+//          fadeTransition.play()
         }
         println(
           s"Stylesheet loaded: ${getClass.getResource("/style.css").toExternalForm}"
