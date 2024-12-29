@@ -1,17 +1,8 @@
-import java.awt.image.BufferedImage
-import javax.imageio.ImageIO
-import java.io.File
-import java.io.IOException
+package Utils
 
-object PossibleImageFormat {
-  val PNG = "png"
-  val JPEG = "jpeg"
-  val GIF = "gif"
-  val BMP = "bmp"
-  val TIFF = "tiff"
-  val WEBP = "webp"
-  val INVALID_FORMAT = ""
-}
+import java.awt.image.BufferedImage
+import java.io.{File, IOException}
+import javax.imageio.ImageIO
 
 object ImageUtils {
   @throws[IOException]

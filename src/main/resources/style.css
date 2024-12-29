@@ -1,0 +1,15 @@
+.icon-button {
+    -fx-background-color: red;  /* Default background */
+    -fx-padding: 10;  /* Ensure there is some padding for better interaction */
+}
+
+.icon-button:hover {
+    -fx-background-color: blue;  /* Hover background color */
+    -fx-cursor: hand;  /* Change cursor to hand on hover */
+}
+
+.format-selector {
+    -fx-font-size: 13px;
+    -fx-font-family: "Times New Roman";
+    -fx-background-color: #91959c;  /* Correct hex color format */
+}
