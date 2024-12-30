@@ -76,3 +76,4 @@ project/**/metals.sbt
 
 # Project specific
 ./converted-images/*
+application.conf
