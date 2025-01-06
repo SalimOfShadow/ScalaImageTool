@@ -19,6 +19,7 @@ import scalafx.scene.input.{DragEvent, MouseEvent, TransferMode}
 import scalafx.scene.layout.StackPane
 import scalafx.scene.shape.Rectangle
 import scalafx.util.Duration
+import utils.SaveOption
 
 import java.nio.file.{Path, Paths}
 import scala.jdk.CollectionConverters.*
@@ -104,9 +105,14 @@ object ScalaImageTool extends JFXApp3 {
           val imageList = draggedFiles.filter(isAnImage)
           val selectedImageFormat: String =
             Option(choiceBox.value.value).map(_.toLowerCase).getOrElse("")
-
           if (selectedImageFormat != "") {
             println(selectedImageFormat)
+            implicit val selectedToggle: SaveOption = SaveOption
+              .fromString(toggleGroup
+                .getSelectedToggle
+                .getUserData
+                .toString)
+              .getOrElse(SaveOption.Local)
             saveImage(imageList, selectedImageFormat)
           } else {
             val ProceedButton = new ButtonType("OK")
@@ -122,11 +128,6 @@ object ScalaImageTool extends JFXApp3 {
         }
         rectangleBox.onDragExited = (e: DragEvent) => {
           swapIconImage(DROP,iconView)
-        }
-        // For testing purposes only
-        rectangleBox.onMouseClicked = () => {
-          val selectedToggle: String = toggleGroup.getSelectedToggle.getUserData.toString
-          println(selectedToggle)
         }
         // Drop File Icon
         val iconView: ImageView = new ImageView(getIconImage(DROP)) {

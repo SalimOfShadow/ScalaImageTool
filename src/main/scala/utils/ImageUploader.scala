@@ -8,7 +8,7 @@ import java.io.File
 import java.nio.file.Files
 
 case class ImageUploader(
-    image: File,
+    imageList: List[File],
     uploadingSite: String,
     imageName: Option[String]
 ) {
@@ -30,42 +30,45 @@ case class ImageUploader(
 
   def uploadPicture(): Unit = {
     try {
+      println(imageList)
       val endpoint: String = retrieveEndpoint()
-      //    val apiKey: String = retrieveApiKey()
-      val imageToUpload = image
-      val imageBytes = Files.readAllBytes(imageToUpload.toPath)
-      val apiKey = retrieveApiKey()
-      // Create the request
-      val response = basicRequest
-        .post(uri"https://api.imgbb.com/1/upload?key=$apiKey")
-        .multipartBody(
-          multipart("image", imageBytes).fileName("image.png")
-        ) // Binary data with a file name
-        .send()
-      val responseMessage: String = response.body match {
-        case Right(succ) => {
-          val jsonResponse = parse(succ)
-          val response = jsonResponse match {
-            case Left(err) => "Failed parsing the JSON response"
-            case Right(json) => {
-              val cursor = json.hcursor
-              val url = cursor
-                .downField("data")
-                .get[String]("url_viewer")
-                .getOrElse("No url was found")
-              url
+      val apiKey: String = retrieveApiKey()
+      imageList.foreach(image => {
+        println("Entered the imageList foreach inside uploadPicture")
+        val imageToUpload = image
+        val imageBytes = Files.readAllBytes(imageToUpload.toPath)
+        // Create the request
+        val response = basicRequest
+          .post(uri"https://api.imgbb.com/1/upload?key=$apiKey")
+          .multipartBody(
+            multipart("image", imageBytes).fileName("image.png")
+          ) // Binary data with a file name
+          .send()
+        val responseMessage: String = response.body match {
+          case Right(succ) => {
+            val jsonResponse = parse(succ)
+            val response = jsonResponse match {
+              case Left(err) => "Failed parsing the JSON response"
+              case Right(json) => {
+                val cursor = json.hcursor
+                val url = cursor
+                  .downField("data")
+                  .get[String]("url_viewer")
+                  .getOrElse("No url was found")
+                url
+              }
             }
-          }
-          println(
+            println(
+              s"Successfully uploaded the image! $response"
+            )
             s"Successfully uploaded the image! $response"
-          )
-          s"Successfully uploaded the image! $response"
-        }
-        case Left(err) => {
-          println(s"The image upload has failed. $err")
-          "The image upload has failed. $err"
-        }
-      }
+          }
+          case Left(err) => {
+            println(s"The image upload has failed. $err")
+            "The image upload has failed. $err"
+          }
+
+      }})
     } catch {
       case e: Exception =>
         if (e.getLocalizedMessage.contains("No configuration setting found")) {
@@ -81,6 +84,6 @@ case class ImageUploader(
 object TestApp extends App {
   private val filePath = getClass.getResource("/icons/success-icon.png").getPath
   private val imageFile: File = new File(filePath)
-  private val imageUploader = ImageUploader(imageFile, "imgbb", Some("Test"))
+  private val imageUploader = ImageUploader(List(imageFile), "imgbb", Some("Test"))
   imageUploader.uploadPicture()
 }

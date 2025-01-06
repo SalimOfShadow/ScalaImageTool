@@ -31,8 +31,9 @@ object ImageUtils {
     image != null
   }
 
-  def saveImage(imageList: List[File], imageType: String): Unit = {
+  def saveImage(imageList: List[File], imageType: String)(implicit saveOption: SaveOption): Unit = {
     println("Should save the images")
+    if (saveOption == SaveOption.Local){
     val fileNames =
       imageList.map(file =>
         file.getName.substring(0, file.getName.lastIndexOf("."))
@@ -46,6 +47,11 @@ object ImageUtils {
         new File(s"./converted-images/${fileName}${fileExtension}")
       )
     )
+      println("Image saved locally.")
+    }else{
+        val imageUploader = ImageUploader(imageList, saveOption.toString.toLowerCase, Some("test-name")) // TODO - RETRIEVE THE CORRECT NAMES
+        val result: Unit = imageUploader.uploadPicture()
+    }
   }
 
   def getIconImage(action: IconAction): Image = {
