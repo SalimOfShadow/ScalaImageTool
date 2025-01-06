@@ -13,10 +13,17 @@ case class ImageUploader(
     imageName: Option[String]
 ) {
   private def retrieveApiKey(): String = {
+    try{
     val configPath = getClass.getResource("/application.conf").getPath
     val config = ConfigFactory.load()
     val apiKey = config.getString(s"api.$uploadingSite")
     apiKey
+    }catch
+      case e => {
+        val errorMessage: String = "Encountered an error.Please make sure the API key is correctly placed inside application.conf"
+        println(errorMessage)
+        errorMessage
+      }
   }
 
   private def retrieveEndpoint(): String = {
@@ -31,13 +38,12 @@ case class ImageUploader(
   def uploadPicture(): Unit = {
     try {
       println(imageList)
-      // TODO - FIGURE OUT WHICH ONE OF THESE TWO FUNCTION IS CAUSING THE ENTIRE PROGRAM TO HALT
       val endpoint: String = retrieveEndpoint()
       val apiKey: String = retrieveApiKey()
+      if (!apiKey.contains("Encountered an error.")){
 
 
       imageList.foreach(image => {
-        println("Entered the imageList foreach inside uploadPicture")
         val imageToUpload = image
         val imageBytes = Files.readAllBytes(imageToUpload.toPath)
         // Create the request
@@ -71,7 +77,7 @@ case class ImageUploader(
             "The image upload has failed. $err"
           }
 
-      }})
+      }})}
     } catch {
       case e: Exception =>
         if (e.getLocalizedMessage.contains("No configuration setting found")) {
