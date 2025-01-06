@@ -43,6 +43,36 @@ object ScalaImageTool extends JFXApp3 {
           prefHeight = 10
           styleClass += "format-selector"
         }
+        val toggleGroup: ToggleGroup = new ToggleGroup
+        val localToggle: ToggleButton = new ToggleButton("Save Locally") {
+          layoutX = 100
+          layoutY = 150
+          padding = Insets(5, 15, 5, 15)
+          prefWidth = 120
+          prefHeight = 20
+          userData = "local"
+        }
+
+        val imgbbToggle: ToggleButton = new ToggleButton("imgbb") {
+          layoutX = 230
+          layoutY = 150
+          padding = Insets(5, 15, 5, 15)
+          prefWidth = 90
+          prefHeight = 20
+          userData = "imgbb"
+        }
+        val imgurToggle: ToggleButton = new ToggleButton("imgur"){
+          layoutX = 330
+          layoutY = 150
+          padding = Insets(5, 15, 5, 15)
+          prefWidth = 90
+          prefHeight = 20
+          userData = "imgur"
+        }
+
+        toggleGroup.toggles = Seq(localToggle,imgbbToggle,imgurToggle)
+        toggleGroup.selectToggle(imgbbToggle)
+
         // Handle drags
         val rectangleWidth = 500
         val rectangleHeight = 300
@@ -60,12 +90,14 @@ object ScalaImageTool extends JFXApp3 {
           swapIconImage(ATTACH, iconView)
           handleFileDrag(e, e.getDragboard.getFiles.asScala.toList)
         }
+
         rectangleBox.onDragOver = (e: DragEvent) => {
           if (e.getDragboard.hasFiles) {
             e.acceptTransferModes(TransferMode.Link) // Accept drag-and-drop
           }
           e.consume() // Consume the event
         }
+
         rectangleBox.onDragDropped = (e: DragEvent) => {
           println("Drag dropped fired")
           val draggedFiles = e.getDragboard.getFiles.asScala.toList
@@ -91,7 +123,11 @@ object ScalaImageTool extends JFXApp3 {
         rectangleBox.onDragExited = (e: DragEvent) => {
           swapIconImage(DROP,iconView)
         }
-
+        // For testing purposes only
+        rectangleBox.onMouseClicked = () => {
+          val selectedToggle: String = toggleGroup.getSelectedToggle.getUserData.toString
+          println(selectedToggle)
+        }
         // Drop File Icon
         val iconView: ImageView = new ImageView(getIconImage(DROP)) {
           styleClass += "icon-button"
@@ -105,7 +141,7 @@ object ScalaImageTool extends JFXApp3 {
         stackPane.styleClass += "icon-button"
 
         // Displayed content array
-        content = List(rectangleBox, choiceBox, stackPane)
+        content = List(rectangleBox, choiceBox, stackPane,localToggle,imgbbToggle,imgurToggle)
       }
 //      centerOnScreen() // Figure out how it works
 
