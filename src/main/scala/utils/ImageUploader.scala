@@ -31,8 +31,11 @@ case class ImageUploader(
   def uploadPicture(): Unit = {
     try {
       println(imageList)
+      // TODO - FIGURE OUT WHICH ONE OF THESE TWO FUNCTION IS CAUSING THE ENTIRE PROGRAM TO HALT
       val endpoint: String = retrieveEndpoint()
       val apiKey: String = retrieveApiKey()
+
+
       imageList.foreach(image => {
         println("Entered the imageList foreach inside uploadPicture")
         val imageToUpload = image
