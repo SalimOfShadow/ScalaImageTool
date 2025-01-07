@@ -1,5 +1,6 @@
 package utils
 
+
 import scalafx.animation.FadeTransition
 import scalafx.event.ActionEvent
 import scalafx.scene.image.{Image, ImageView}
@@ -31,27 +32,34 @@ object ImageUtils {
     image != null
   }
 
-  def saveImage(imageList: List[File], imageType: String)(implicit saveOption: SaveOption): Unit = {
-    println("Should save the images")
-    if (saveOption == SaveOption.Local){
-    val fileNames =
-      imageList.map(file =>
-        file.getName.substring(0, file.getName.lastIndexOf("."))
-      )
-    val bufferedImageList = imageList.map(ImageIO.read).zip(fileNames)
-    val fileExtension = s".${imageType.toLowerCase}"
-    val convertedImages: Unit = bufferedImageList.foreach((image, fileName) =>
-      ImageIO.write(
-        image,
-        imageType,
-        new File(s"./converted-images/${fileName}${fileExtension}")
-      )
-    )
-      println("Image saved locally.")
-    }else{
+  def saveImage(imageList: List[File], imageType: String)(implicit saveOption: SaveOption): String = {
+    try{
+      println("Should save the images")
+      if (saveOption == SaveOption.Local) {
+        val fileNames =
+          imageList.map(file =>
+            file.getName.substring(0, file.getName.lastIndexOf("."))
+          )
+        val bufferedImageList = imageList.map(ImageIO.read).zip(fileNames)
+        val fileExtension = s".${imageType.toLowerCase}"
+        val convertedImages: Unit = bufferedImageList.foreach((image, fileName) =>
+          ImageIO.write(
+            image,
+            imageType,
+            new File(s"./converted-images/${fileName}${fileExtension}")
+          )
+        )
+        println("Image saved locally.")
+        "Image saved locally"
+      } else {
         val imageUploader = ImageUploader(imageList, saveOption.toString.toLowerCase, Some("test-name")) // TODO - RETRIEVE THE CORRECT NAMES
-        val result: Unit = imageUploader.uploadPicture()
-    }
+        val result: String = imageUploader.uploadPicture()
+        result
+      }
+    }catch
+      case e => 
+        println("An error occurred while saving the image")
+        "An error occurred while saving the image"
   }
 
   def getIconImage(action: IconAction): Image = {

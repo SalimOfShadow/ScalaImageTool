@@ -1,5 +1,11 @@
 import utils.DragAndDropUtils.handleFileDrag
-import utils.ImageUtils.{IconAction, getIconImage, isAnImage, saveImage, swapIconImage}
+import utils.ImageUtils.{
+  IconAction,
+  getIconImage,
+  isAnImage,
+  saveImage,
+  swapIconImage
+}
 import utils.ImageUtils.IconAction.*
 import scalafx.application.JFXApp3
 import scalafx.scene.paint.Color.*
@@ -62,16 +68,8 @@ object ScalaImageTool extends JFXApp3 {
           prefHeight = 20
           userData = "imgbb"
         }
-        val imgurToggle: ToggleButton = new ToggleButton("imgur"){
-          layoutX = 330
-          layoutY = 150
-          padding = Insets(5, 15, 5, 15)
-          prefWidth = 90
-          prefHeight = 20
-          userData = "imgur"
-        }
 
-        toggleGroup.toggles = Seq(localToggle,imgbbToggle,imgurToggle)
+        toggleGroup.toggles = Seq(localToggle, imgbbToggle)
         toggleGroup.selectToggle(imgbbToggle)
 
         // Handle drags
@@ -108,12 +106,10 @@ object ScalaImageTool extends JFXApp3 {
           if (selectedImageFormat != "") {
             println(selectedImageFormat)
             implicit val selectedToggle: SaveOption = SaveOption
-              .fromString(toggleGroup
-                .getSelectedToggle
-                .getUserData
-                .toString)
+              .fromString(toggleGroup.getSelectedToggle.getUserData.toString)
               .getOrElse(SaveOption.Local)
-            saveImage(imageList, selectedImageFormat)
+            val saveOperationResult = saveImage(imageList, selectedImageFormat)
+            resultLabel.text = saveOperationResult
           } else {
             val ProceedButton = new ButtonType("OK")
             val alert = new Alert(Warning) {
@@ -127,7 +123,7 @@ object ScalaImageTool extends JFXApp3 {
           }
         }
         rectangleBox.onDragExited = (e: DragEvent) => {
-          swapIconImage(DROP,iconView)
+          swapIconImage(DROP, iconView)
         }
         // Drop File Icon
         val iconView: ImageView = new ImageView(getIconImage(DROP)) {
@@ -141,8 +137,20 @@ object ScalaImageTool extends JFXApp3 {
         };
         stackPane.styleClass += "icon-button"
 
+        val resultLabel: Label = new Label("Result URL") {
+          layoutX = 100
+          layoutY = 580
+        }
+        resultLabel.text = "New result URL"
         // Displayed content array
-        content = List(rectangleBox, choiceBox, stackPane,localToggle,imgbbToggle,imgurToggle)
+        content = List(
+          rectangleBox,
+          choiceBox,
+          stackPane,
+          localToggle,
+          imgbbToggle,
+          resultLabel
+        )
       }
 //      centerOnScreen() // Figure out how it works
 
